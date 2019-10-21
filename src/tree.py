@@ -1,6 +1,8 @@
 class Node:
     # value < split_value -> use left node
     # value >= split_value -> use right node
+    # a leaf node should have a label and depth
+    # a non-leaf node should have feature and split_value, and should eventually also have left_node, right_node
     def __init__(self, feature=None, split_value=None, depth=None, label=None):
         self.label = label
         self.feature = feature

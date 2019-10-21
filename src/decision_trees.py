@@ -125,12 +125,13 @@ def split_dataset(training_data, split):
     sorted_data = training_data[training_data[:, best_feature].argsort()]
     left_dataset = sorted_data[:best_value_position_in_sorted, :]
     right_dataset = sorted_data[best_value_position_in_sorted:, :]
-    print(best_feature, _best_value, best_value_position_in_sorted)
-    print(left_dataset)
-    print(right_dataset)
+    # print(best_feature, _best_value, best_value_position_in_sorted)
+    # print(left_dataset)
+    # print(right_dataset)
     return left_dataset, right_dataset
 
 
+# creates the decision tree
 def decision_tree_training(training_data, depth):
     if np.all(training_data[:, -1] == training_data[0][-1]):
         return Node(depth=depth, label=training_data[0][-1]), depth
@@ -142,9 +143,10 @@ def decision_tree_training(training_data, depth):
         feature, value, _ = split
         # create node at this point
         node = Node(feature=feature, split_value=value, depth=depth)
-        # create left and right branches
+        # create left and right branches of the decision tree
         left_node, left_depth = decision_tree_training(left_dataset, depth + 1)
         right_node, right_depth = decision_tree_training(right_dataset, depth + 1)
+        # connect the node to the left and right branches
         node.set_left_node(left_node, left_depth)
         node.set_right_node(right_node, right_depth)
         return node, max(left_depth, right_depth)
@@ -160,4 +162,7 @@ np.random.shuffle(dataMatrix)
 split_ = find_split(dataMatrix[:100])
 split_dataset(dataMatrix[:100], split_)
 
+# here is call the recursive decision_tree_training to create the decision tree
 tree, depth = decision_tree_training(dataMatrix[:100], 0)
+print("Depth:", depth)
+print("Tree:", tree)
