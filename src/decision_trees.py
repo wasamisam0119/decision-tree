@@ -88,7 +88,8 @@ def find_split(training_data):
     # base entropy is the total entropy of the dataset
     base_entropy = entropy_calc(total_counts, len(training_data))
     best_feature = -1
-    best_feature_value = -1
+    best_value = -1
+    best_value_position_in_sorted = -1
     max_gain = 0
     for i in range(features):
         # the values of each feature e.g. the height of a group of people [170,180,167]
@@ -109,22 +110,44 @@ def find_split(training_data):
                 if current_gain > max_gain:
                     max_gain = current_gain
                     best_feature = i
-                    best_feature_value = value
+                    best_value = value
+                    best_value_position_in_sorted = index
             prev_val = value
             left_counters[sorted_data[index][-1]] += 1
             right_counters[sorted_data[index][-1]] -= 1
-    return best_feature, best_feature_value
+    return best_feature, best_value, best_value_position_in_sorted
 
 
-def split_dataset(training_data, feature, value):
-    pass
+# split is the values returned by find_split
+# the split_dataset function is to be called after finding a split, in order to actually split the dataset
+def split_dataset(training_data, split):
+    best_feature, _best_value, best_value_position_in_sorted = split
+    sorted_data = training_data[training_data[:, best_feature].argsort()]
+    left_dataset = sorted_data[:best_value_position_in_sorted, :]
+    right_dataset = sorted_data[best_value_position_in_sorted:, :]
+    print(best_feature, _best_value, best_value_position_in_sorted)
+    print(left_dataset)
+    print(right_dataset)
+    return left_dataset, right_dataset
 
 
 def decision_tree_training(training_data, depth):
     if np.all(training_data[:, -1] == training_data[0][-1]):
-        return Node(training_data[0][-1], depth)
+        return Node(depth=depth, label=training_data[0][-1]), depth
     else:
-        pass
+        # find where to split
+        split = find_split(training_data)
+        # split there
+        left_dataset, right_dataset = split_dataset(training_data, split)
+        feature, value, _ = split
+        # create node at this point
+        node = Node(feature=feature, split_value=value, depth=depth)
+        # create left and right branches
+        left_node, left_depth = decision_tree_training(left_dataset, depth + 1)
+        right_node, right_depth = decision_tree_training(right_dataset, depth + 1)
+        node.set_left_node(left_node, left_depth)
+        node.set_right_node(right_node, right_depth)
+        return node, max(left_depth, right_depth)
 
 
 filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
@@ -134,4 +157,7 @@ np.random.shuffle(dataMatrix)
 # print(len(dataMatrix[0]))
 # print(dataMatrix[:4])
 # print(dataMatrix[dataMatrix[:, 1].argsort()][:4])
-print(find_split(dataMatrix[:4]))
+split_ = find_split(dataMatrix[:100])
+split_dataset(dataMatrix[:100], split_)
+
+tree, depth = decision_tree_training(dataMatrix[:100], 0)
