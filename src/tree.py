@@ -22,7 +22,7 @@ class Node:
         self.right_depth = depth
 
     def is_leaf(self):
-        return self.left_node is None and self.right_node is None
+        return (self.left_node is None) and (self.right_node is None)
 
     def get_depth(self):
         return max(self.left_depth, self.right_depth)

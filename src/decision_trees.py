@@ -6,7 +6,7 @@ import numpy as np
 import csv
 from io import StringIO
 import os
-from src.tree import Node
+from tree import Node
 
 
 # class DecisionTree:
@@ -45,6 +45,14 @@ class Test:
         total_samples = 8
         H = entropy_calc(test_dict, total_samples)
         assert (H == 1.75)
+
+    # tests that the tree is a correct decision tree from the training data
+    @staticmethod
+    def test_tree_on_training_data(tree, dataset):
+        for datapoint in dataset:
+            features = datapoint[:-1]
+            prediction = predict(tree, features)
+            assert datapoint[-1] == prediction
 
 
 def entropy_calc(label_counters, total_samples):
@@ -152,17 +160,35 @@ def decision_tree_training(training_data, depth):
         return node, max(left_depth, right_depth)
 
 
-filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
+def predict(decision_tree: Node, datapoint):
+    if decision_tree.is_leaf():
+        # print('leaf', decision_tree.label)
+        # a = decision_tree.label
+        return decision_tree.label
+    else:
+        if datapoint[decision_tree.feature] < decision_tree.split_value:
+            # print('left')
+            return predict(decision_tree.left_node, datapoint)
+        else:
+            # print('right')
+            return predict(decision_tree.right_node, datapoint)
+
+
+# filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
+parentDirectory = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+filename = os.path.join(parentDirectory, 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
 dataMatrix = np.loadtxt(filename)
 np.random.shuffle(dataMatrix)
 # print(dataMatrix[:4, -1])
 # print(len(dataMatrix[0]))
 # print(dataMatrix[:4])
 # print(dataMatrix[dataMatrix[:, 1].argsort()][:4])
-split_ = find_split(dataMatrix[:100])
-split_dataset(dataMatrix[:100], split_)
+split_ = find_split(dataMatrix)
+split_dataset(dataMatrix, split_)
 
 # here is call the recursive decision_tree_training to create the decision tree
-tree, depth = decision_tree_training(dataMatrix[:100], 0)
+tree, depth = decision_tree_training(dataMatrix, 0)
 print("Depth:", depth)
 print("Tree:", tree)
+# a = predict(tree, dataMatrix[0])
+Test.test_tree_on_training_data(tree, dataMatrix)
