@@ -103,14 +103,14 @@ def find_split(training_data):
         # the values of each feature e.g. the height of a group of people [170,180,167]
         sorted_data = training_data[training_data[:, i].argsort()]
         feature_list = [datapoint[i] for datapoint in sorted_data]
-        prev_val = -10000
         # initialize the left counters
         initial_l_count = []
         for _label in unique:
             initial_l_count.append(0)
         left_counters = dict(zip(unique, initial_l_count))
-        right_counters = total_counts.copy()
-        for index, value in enumerate(feature_list):
+        right_counters = total_counts.copy()#why use copy?
+        prev_val = -10000 # initial a value for feature_list[index-1]
+        for index, value in enumerate(feature_list): #moving the pointer
             # if prev_val == value:
             #     continue
             if prev_val != value:
@@ -147,6 +147,7 @@ def decision_tree_training(training_data, depth):
         # find where to split
         split = find_split(training_data)
         # split there
+        #however, we can just record the position instead of actual split the dataset
         left_dataset, right_dataset = split_dataset(training_data, split)
         feature, value, _ = split
         # create node at this point
@@ -160,7 +161,7 @@ def decision_tree_training(training_data, depth):
         return node, max(left_depth, right_depth)
 
 
-def predict(decision_tree: Node, datapoint):
+def predict_datepoint(decision_tree: Node, datapoint):
     if decision_tree.is_leaf():
         # print('leaf', decision_tree.label)
         # a = decision_tree.label
@@ -168,10 +169,23 @@ def predict(decision_tree: Node, datapoint):
     else:
         if datapoint[decision_tree.feature] < decision_tree.split_value:
             # print('left')
-            return predict(decision_tree.left_node, datapoint)
+            return predict_datapoint(decision_tree.left_node, datapoint)
         else:
             # print('right')
-            return predict(decision_tree.right_node, datapoint)
+            return predict_datapoint(decision_tree.right_node, datapoint)
+
+def predict(decision_tree:Node,X_test):
+    Y_test = []
+    for x in X_test:
+        y = predict(decision_tree:Node,X_test)
+        Y_test.add[y]
+    return Y_test
+
+def train_test_split(training_data,percentage):
+    number_of_data = training_data.shape[0]
+    train_test_index = int(percentage * number_of_data)
+    data_train, data_test = dataMatrix[0:train_test_index,:], dataMatrix[train_test_index:,:]
+    return data_train,data_test
 
 
 # filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
@@ -179,16 +193,10 @@ parentDirectory = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 filename = os.path.join(parentDirectory, 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
 dataMatrix = np.loadtxt(filename)
 np.random.shuffle(dataMatrix)
-# print(dataMatrix[:4, -1])
-# print(len(dataMatrix[0]))
-# print(dataMatrix[:4])
-# print(dataMatrix[dataMatrix[:, 1].argsort()][:4])
-split_ = find_split(dataMatrix)
-split_dataset(dataMatrix, split_)
 
 # here is call the recursive decision_tree_training to create the decision tree
 tree, depth = decision_tree_training(dataMatrix, 0)
 print("Depth:", depth)
 print("Tree:", tree)
 # a = predict(tree, dataMatrix[0])
-Test.test_tree_on_training_data(tree, dataMatrix)
+#Test.test_tree_on_training_data(tree, dataMatrix)
