@@ -160,8 +160,7 @@ def decision_tree_training(training_data, depth):
         node.set_right_node(right_node, right_depth)
         return node, max(left_depth, right_depth)
 
-
-def predict_datepoint(decision_tree: Node, datapoint):
+def predict_datapoint(decision_tree: Node, datapoint):
     if decision_tree.is_leaf():
         # print('leaf', decision_tree.label)
         # a = decision_tree.label
@@ -174,11 +173,11 @@ def predict_datepoint(decision_tree: Node, datapoint):
             # print('right')
             return predict_datapoint(decision_tree.right_node, datapoint)
 
-def predict(decision_tree:Node,X_test):
+def predict(decision_tree, X_test):
     Y_test = []
     for x in X_test:
-        y = predict(decision_tree:Node,X_test)
-        Y_test.add[y]
+        y = predict_datapoint(decision_tree,x)
+        Y_test.append(y)
     return Y_test
 
 def train_test_split(training_data,percentage):
