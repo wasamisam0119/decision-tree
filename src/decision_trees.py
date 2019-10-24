@@ -136,7 +136,7 @@ def split_dataset(training_data, split):
 
 
 # creates the decision tree
-def decision_tree_training(training_data, depth):
+def decision_tree_training(training_data, depth=0):
     if np.all(training_data[:, -1] == training_data[0][-1]):
         return Node(depth=depth, label=training_data[0][-1]), depth
     else:
