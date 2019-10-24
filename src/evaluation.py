@@ -23,7 +23,7 @@ def split_dataset(nb_folds, dataset):
     return folds
 
 
-# Return the confusion matrix and the global error estimate for the tree.
+# Return the confusion matrix and the classification rate of the tree.
 def evaluate(test_db, trained_tree):
 
     # Confusion matrix for this tree.
@@ -45,9 +45,9 @@ def evaluate(test_db, trained_tree):
         if predicted_label != label:
             error += 1
 
-    global_error = error / len(test_db)
+    classification_rate = 1 - (error / len(test_db))
 
-    return confusion_matrix, global_error
+    return confusion_matrix, classification_rate
 
 
 # Return the metrics linked to the confusion matrix
@@ -63,6 +63,7 @@ def get_metrics(confusion_matrix):
 
     return metrics
 
+
 # Run the k-fold cross validation and return the confusion matrix.
 def fold_cross_validation(k, file):
 
@@ -74,6 +75,9 @@ def fold_cross_validation(k, file):
 
     # This is the final confusion matrix.
     confusion_matrix = np.array([[0]*4]*4)
+
+    # Total classification rate
+    total_classification_rate = 0
 
     # Loop for the k-fold cross validation
     for i in range(k):
@@ -99,22 +103,31 @@ def fold_cross_validation(k, file):
 
             # Then we call the function to create the decision tree.
             tree, depth = decision_tree_training(sub_training_set)
-            matrix, global_error = evaluate(validation_set, tree)
+            matrix, classification_rate = evaluate(validation_set, tree)
 
             # If this model is better than the old one, we update it
-            if (best_tree is None) or (best_score > global_error):
-                best_score = global_error
+            if (best_tree is None) or (best_score < classification_rate):
+                best_score = classification_rate
                 best_tree = tree
 
         # Now that we have the best tree, we can run the final evaluation
-        matrix, global_error = evaluate(test_set, best_tree)
+        matrix, classification_rate = evaluate(test_set, best_tree)
 
         # We increment our global confusion_matrix
         confusion_matrix = np.add(confusion_matrix, matrix)
+        total_classification_rate += classification_rate
 
-    return confusion_matrix
+    # Average classification rate
+    average_classification_rate = total_classification_rate / k
+
+    return confusion_matrix, average_classification_rate
 
 
-clean_confusion_matrix = fold_cross_validation(10, clean_dataset)
+clean_confusion_matrix, clean_accuracy = fold_cross_validation(10, clean_dataset)
+print(clean_confusion_matrix)
 print(get_metrics(clean_confusion_matrix))
-#noisy_confusion_matrix = fold_cross_validation(10, noisy_dataset)
+print(clean_accuracy)
+noisy_confusion_matrix, noisy_accuracy = fold_cross_validation(10, noisy_dataset)
+print(noisy_confusion_matrix)
+print(get_metrics(noisy_confusion_matrix))
+print(noisy_accuracy)
