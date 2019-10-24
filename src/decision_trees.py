@@ -4,35 +4,6 @@ import os
 from tree import Node
 
 
-# class DecisionTree:
-#     dataMatrix = np.loadtxt('wifi_db/clean_dataset.txt')
-#
-#     def decision_tree_learning(self, dataMatrix, max_depth, pruneIndex):
-#         label = dataMatrix[:, dataMatrix.shape[1] - 1]
-#         H = entropy_calc(label)
-#         classes = np.unique(label)
-#         data_by_column = dataMatrix[:, 0:dataMatrix.shape[1] - 1]
-#
-#         for idx in range(0, dataMatrix.shape[1] - 1):
-#             cur_col = dataMatrix[:, idx]
-#             sort_col = np.sort(cur_col)
-#
-#     label_counter is a dictionary that has
-#     key: label
-#     value: counter of the label in the dataset
-#     {'yes':5}
-#
-#
-#     def information_gain(self, S_all, S_left, S_right):
-#         info_gain = self.entropy_calc(S_all) - remainder
-#         return info_gain
-#
-#     def depth_calc(self):
-#         left_depth = self.left.depth_calc()
-#         right_depth = self.right.depth_calc()
-#         max_depth = max(left_depth, right_depth)
-#         return max_depth
-
 class Test:
     @classmethod
     def test_entropy_calc(cls):

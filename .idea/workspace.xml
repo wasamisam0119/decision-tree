@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="41552f10-99ff-4057-b298-6c8cd939e7d9" name="Default Changelist" comment="Metrics">
+    <list default="true" id="41552f10-99ff-4057-b298-6c8cd939e7d9" name="Default Changelist" comment="Average accuracy">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/src/evaluation.py" afterPath="$PROJECT_DIR$/src/evaluation.py" />
+      <change beforePath="$PROJECT_DIR$/src/decision_trees.py" afterPath="$PROJECT_DIR$/src/decision_trees.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -14,11 +14,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="decision_trees.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="decision_trees.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/decision_trees.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2085">
-              <caret line="139" column="60" lean-forward="true" selection-start-line="139" selection-start-column="60" selection-end-line="139" selection-end-column="60" />
+            <state relative-caret-position="108">
+              <caret line="153" column="43" lean-forward="true" selection-start-line="153" selection-start-column="43" selection-end-line="153" selection-end-column="43" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -26,10 +26,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="evaluation.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="evaluation.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/evaluation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="397">
+            <state relative-caret-position="337">
               <caret line="132" column="20" lean-forward="false" selection-start-line="132" selection-start-column="20" selection-end-line="132" selection-end-column="20" />
               <folding />
             </state>
@@ -66,8 +66,8 @@
         <option value="$PROJECT_DIR$/src/binary_tree.py" />
         <option value="$PROJECT_DIR$/src/decTrees.ipynb" />
         <option value="$PROJECT_DIR$/src/tree.py" />
-        <option value="$PROJECT_DIR$/src/decision_trees.py" />
         <option value="$PROJECT_DIR$/src/evaluation.py" />
+        <option value="$PROJECT_DIR$/src/decision_trees.py" />
       </list>
     </option>
   </component>
@@ -236,13 +236,20 @@
       <option name="project" value="LOCAL" />
       <updated>1571930713361</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Average accuracy">
+      <created>1571934915648</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1571934915649</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="798" extended-state="6" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -268,7 +275,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init step3" />
     <MESSAGE value="Metrics" />
-    <option name="LAST_COMMIT_MESSAGE" value="Metrics" />
+    <MESSAGE value="Average accuracy" />
+    <option name="LAST_COMMIT_MESSAGE" value="Average accuracy" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -340,21 +348,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/decision_trees.py">
+    <entry file="file://$PROJECT_DIR$/src/evaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2085">
-          <caret line="139" column="60" lean-forward="true" selection-start-line="139" selection-start-column="60" selection-end-line="139" selection-end-column="60" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="337">
+          <caret line="132" column="20" lean-forward="false" selection-start-line="132" selection-start-column="20" selection-end-line="132" selection-end-column="20" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/evaluation.py">
+    <entry file="file://$PROJECT_DIR$/src/decision_trees.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="397">
-          <caret line="132" column="20" lean-forward="false" selection-start-line="132" selection-start-column="20" selection-end-line="132" selection-end-column="20" />
-          <folding />
+        <state relative-caret-position="108">
+          <caret line="153" column="43" lean-forward="true" selection-start-line="153" selection-start-column="43" selection-end-line="153" selection-end-column="43" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
