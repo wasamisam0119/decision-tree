@@ -1,12 +1,10 @@
-import numpy as np
+from decision_trees import *
 
-clean_dataset = open("clean_dataset.txt", 'r')
+clean_dataset = 'wifi_db/clean_dataset.txt'
+
 
 def get_matrix_from_file(file):
-    matrix = []
-    for line in file:
-        matrix.append(line.split())
-    matrix = np.array(matrix).astype(int)
+    matrix = np.loadtxt(file)
     np.random.shuffle(matrix)
     return matrix
 
@@ -26,19 +24,14 @@ def split_dataset(nb_folds, file):
 def fold_cross_validation(k, dataset):
     folds = split_dataset(k, dataset)
     confusion_matrix = np.array([[0]*4]*4)
-
     # Loop for the construction of the decision trees and evaluation
     for i in range(k):
-        if i == 0:
-            training = np.vstack((folds[1:]))
-        elif i == (k-1):
-            training = np.vstack((folds[:-1]))
-        else:
-            training = np.vstack((folds[0:i], folds[i+1:]))
-
+        training = np.vstack(np.delete(folds, np.s_[i], 0))
         test = folds[i]
 
         # Call the function that build the tree
+        tree, depth = decision_tree_training(training, 0)
+        print(tree)
 
         # Iterate over the data of the fold test
         for row in test:
