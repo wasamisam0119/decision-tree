@@ -23,33 +23,6 @@ def split_dataset(nb_folds, dataset):
     return folds
 
 
-# Return the confusion matrix and the classification rate of the tree.
-def evaluate(test_db, trained_tree):
-
-    # Confusion matrix for this tree.
-    confusion_matrix = np.array([[0]*4]*4)
-    error = 0
-
-    # Iterate over the data of the fold test
-    for row in test_db:
-        # We set the features and the label.
-        features = row[:-1]
-        label = int(row[-1])
-
-        # Call the decision tree
-        predicted_label = int(predict_datapoint(trained_tree, features))
-
-        # Increment confusion_matrix
-        confusion_matrix[label - 1][predicted_label - 1] += 1
-
-        if predicted_label != label:
-            error += 1
-
-    classification_rate = 1 - (error / len(test_db))
-
-    return confusion_matrix, classification_rate
-
-
 # Return the metrics linked to the confusion matrix
 def get_metrics(confusion_matrix):
     precision_rates = recall_rates = f1_measures = [0]*4
