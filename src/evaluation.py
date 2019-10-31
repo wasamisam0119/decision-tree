@@ -189,7 +189,7 @@ def show_metrics(metrics, title):
     print(pruned_total_classification_rate)
     print(pruned_depth)
     counts = range(0, len(unpruned_depth))
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 4))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.5))
     ax1.plot(counts, unpruned_depth, 'o-', label='Unpruned')
     ax1.plot(counts, pruned_depth, 'o-', label='Pruned')
     ax1.set(xlabel="Experiment", ylabel="Depth")
