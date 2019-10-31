@@ -188,10 +188,12 @@ def show_metrics(metrics, title):
     print("\nPruned Tree:")
     print(pruned_total_classification_rate)
     print(pruned_depth)
-    plt.plot(unpruned_depth, unpruned_total_classification_rate, pruned_depth, pruned_total_classification_rate)
+    plt.plot(unpruned_depth, unpruned_total_classification_rate, 'o-', label='Unpruned')
+    plt.plot(pruned_depth, pruned_total_classification_rate, 'o-', label='Pruned')
     plt.xlabel("Depth")
     plt.ylabel("Accuracy")
     plt.title(title)
+    plt.legend(loc='best')
     plt.show()
 
 
