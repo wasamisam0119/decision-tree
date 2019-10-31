@@ -1,37 +1,6 @@
 import math
 import numpy as np
-import os
 from tree import Node
-
-
-class Test:
-    @classmethod
-    def test_entropy_calc(cls):
-        test_dict = {1: 4, 2: 2, 3: 1, 4: 1}
-        total_samples = 8
-        H = entropy_calc(test_dict, total_samples)
-        assert (H == 1.75)
-
-    # tests that the tree is a correct decision tree from the training data
-    @staticmethod
-    def test_tree_on_training_data(tree, dataset):
-        for datapoint in dataset:
-            features = datapoint[:-1]
-            prediction = predict(tree, features)
-            assert datapoint[-1] == prediction
-
-    @staticmethod
-    def test_pruning():
-        testing_d = np.array([[45, 1], [50, 1], [37, 4], [68, 3], [90, 2]])
-        tree, depth = decision_tree_training(testing_d, 0)
-        assert depth == 2
-        testing_v = np.array([[37, 1], [48, 1]])
-        testing_v2 = np.array([[56, 1], [31, 1], [10, 4], [20, 4]])
-        pruned = prune(tree, testing_d, testing_v)
-        assert pruned.get_depth() == 0
-        tree, depth = decision_tree_training(testing_d, 0)
-        pruned2 = prune(tree, testing_d, testing_v2)
-        assert pruned2.get_depth() == 2
 
 
 def entropy_calc(label_counters, total_samples):
