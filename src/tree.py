@@ -13,10 +13,12 @@ class Node:
         self.left_depth = None
         self.right_depth = None
 
+    # used for connecting nodes to the parent
     def set_left_node(self, node, depth):
         self.left_node = node
         self.left_depth = depth
 
+    # used for connecting nodes to the parent
     def set_right_node(self, node, depth):
         self.right_node = node
         self.right_depth = depth
@@ -24,6 +26,7 @@ class Node:
     def is_leaf(self):
         return (self.left_node is None) and (self.right_node is None)
 
+    # calculates the total depth of the tree. If, e.g., we have 15 levels then depth is 14
     def get_depth(self):
         if self.is_leaf():
             return self.depth
