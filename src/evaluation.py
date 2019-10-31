@@ -1,4 +1,5 @@
 from src.decision_trees import *
+import matplotlib.pyplot as plt
 
 clean_dataset = 'wifi_db/clean_dataset.txt'
 noisy_dataset = 'wifi_db/noisy_dataset.txt'
@@ -183,9 +184,15 @@ def show_metrics(metrics, title):
     print("Unpruned Tree:")
     print(unpruned_total_classification_rate)
     print(unpruned_depth)
+
     print("\nPruned Tree:")
     print(pruned_total_classification_rate)
     print(pruned_depth)
+    plt.plot(unpruned_depth, unpruned_total_classification_rate, pruned_depth, pruned_total_classification_rate)
+    plt.xlabel("Depth")
+    plt.ylabel("Accuracy")
+    plt.title(title)
+    plt.show()
 
 
 # Get results.
