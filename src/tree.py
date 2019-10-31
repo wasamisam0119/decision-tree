@@ -25,6 +25,8 @@ class Node:
         return (self.left_node is None) and (self.right_node is None)
 
     def get_depth(self):
+        if self.is_leaf():
+            return self.depth
         return max(self.left_depth, self.right_depth)
 
     # from https://stackoverflow.com/questions/20242479/printing-a-tree-data-structure-in-python

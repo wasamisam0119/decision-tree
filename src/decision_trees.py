@@ -141,8 +141,8 @@ def prune(decision_tree: Node, training_dataset, validation_dataset):
     pruned_lnode = prune(decision_tree.left_node, left_training, left_v)
     pruned_rnode = prune(decision_tree.right_node, right_training, right_v)
     # Connect the new children nodes
-    decision_tree.set_left_node(pruned_lnode, pruned_lnode.depth)
-    decision_tree.set_right_node(pruned_rnode, pruned_rnode.depth)
+    decision_tree.set_left_node(pruned_lnode, pruned_lnode.get_depth())
+    decision_tree.set_right_node(pruned_rnode, pruned_rnode.get_depth())
     # Prune this node, if it is only connected to leaves
     if decision_tree.left_node.is_leaf() and decision_tree.right_node.is_leaf():
         # Assign label from the training data
