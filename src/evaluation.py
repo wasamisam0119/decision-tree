@@ -1,5 +1,6 @@
-from src.decision_trees import *
+from decision_trees import *
 import matplotlib.pyplot as plt
+import sys
 
 clean_dataset = 'wifi_db/clean_dataset.txt'
 noisy_dataset = 'wifi_db/noisy_dataset.txt'
@@ -202,10 +203,11 @@ def show_metrics(metrics, title):
     plt.close()
 
 
-# Get results.
-print("Running Clean Dataset...")
-clean = fold_cross_validation(10, clean_dataset)
-print("Running Noisy Dataset...")
-noisy = fold_cross_validation(10, noisy_dataset)
-show_metrics(clean, "Clean Dataset")
-show_metrics(noisy, "Noisy Dataset")
+# Function that initialize the program.
+if __name__ == "__main__":
+    filePath = str(sys.argv[1])
+    print("Running...")
+    # We run the fold cross validation on the file.
+    result = fold_cross_validation(10, filePath)
+    # We print the metrics.
+    show_metrics(result, "Results")
