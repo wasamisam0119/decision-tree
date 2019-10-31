@@ -25,7 +25,9 @@ def split_dataset(nb_folds, dataset):
 
 # Return the metrics linked to the confusion matrix
 def get_metrics(confusion_matrix):
-    precision_rates = recall_rates = f1_measures = [0]*4
+    precision_rates = [0]*4
+    recall_rates = [0]*4
+    f1_measures = [0]*4
 
     for i in range(4):
         precision_rates[i] = confusion_matrix[i][i] / confusion_matrix.sum(axis=0)[i]
@@ -54,6 +56,10 @@ def fold_cross_validation(k, file):
     unpruned_total_classification_rate = 0
     pruned_total_classification_rate = 0
 
+    # Depths
+    unpruned_depth = 0
+    pruned_depth = 0
+
     # Loop for the k-fold cross validation
     for i in range(k):
 
@@ -68,7 +74,6 @@ def fold_cross_validation(k, file):
         # We want to keep the best tree aftet the second n-fold cross validation
         best_pruned_tree = None
         best_score = math.inf
-        best_depth = 0
 
         # Loop for n-fold cross validation on training set for pruning tree.
         for j in range(n):
@@ -80,14 +85,12 @@ def fold_cross_validation(k, file):
             # Then we call the function to create the pruned decision tree.
             tree, depth = decision_tree_training(sub_training_set)
             pruned_tree = prune(tree, sub_training_set, validation_set)
-            pruned_depth = pruned_tree.get_depth()
             matrix, classification_rate = evaluate(validation_set, pruned_tree)
 
             # If this model is better than the old one, we update it
             if (best_pruned_tree is None) or (best_score < classification_rate):
                 best_score = classification_rate
                 best_pruned_tree = pruned_tree
-                best_depth = pruned_depth
 
         unpruned_tree, unpruned_depth = decision_tree_training(training_set)
 
@@ -95,11 +98,15 @@ def fold_cross_validation(k, file):
         unpruned_matrix, unpruned_classification_rate = evaluate(test_set, unpruned_tree)
         pruned_matrix, pruned_classification_rate = evaluate(test_set, best_pruned_tree)
 
-        # We increment our global confusion_matrix
+        # We get the depth of each trees
+        unpruned_depth += unpruned_tree.get_depth()
+        pruned_depth += best_pruned_tree.get_depth()
+
+        # We increment our global confusion_matrices
         unpruned_confusion_matrix = np.add(unpruned_confusion_matrix, unpruned_matrix)
         pruned_confusion_matrix = np.add(pruned_confusion_matrix, pruned_matrix)
 
-        # We increment the classification rate
+        # We increment the classification rates
         unpruned_total_classification_rate += unpruned_classification_rate
         pruned_total_classification_rate += pruned_classification_rate
 
@@ -107,30 +114,74 @@ def fold_cross_validation(k, file):
     unpruned_average_classification_rate = unpruned_total_classification_rate / k
     pruned_average_classification_rate = pruned_total_classification_rate / k
 
-    return unpruned_confusion_matrix, unpruned_average_classification_rate, \
-           pruned_confusion_matrix, pruned_average_classification_rate
+    return unpruned_confusion_matrix, unpruned_average_classification_rate, unpruned_depth, \
+           pruned_confusion_matrix, pruned_average_classification_rate, pruned_depth
+
+
+def show_metrics(metrics, title):
+
+    # Unpruned Metrics
+    unpruned_confusion_matrix = metrics[0]
+    unpruned_average_classification_rate = metrics[1]
+    unpruned_depth = metrics[2]
+
+    # Pruned Metrics
+    pruned_confusion_matrix = metrics[3]
+    pruned_average_classification_rate = metrics[4]
+    pruned_depth = metrics[5]
+
+    # Unpruned tree
+    unpruned_metrics = get_metrics(unpruned_confusion_matrix)
+    print("######### " + title + " #########\n")
+    print("Unpruned Metrics:\n")
+    print("Confusion Matrix:")
+    print(unpruned_confusion_matrix)
+    print("\nMetrics:")
+
+    output_matrix = [['      ', 'Precision', 'Recall   ', 'F1-measures']]
+    # For each room
+    for i in range(4):
+        array = ["Room " + str(i + 1)]
+        for value in unpruned_metrics.values():
+            val = str(round(value[i], 4))
+            while len(val) < 9:
+                val += ' '
+            array.append(val)
+        output_matrix.append(array)
+    output_matrix = np.array(output_matrix)
+
+    # We print the matrix easy to read
+    print(output_matrix)
+    print("\nAverage Classification Rate: " + str(round(unpruned_average_classification_rate, 4)))
+    print("-------------------------------")
+
+    # Pruned tree
+    pruned_metrics = get_metrics(pruned_confusion_matrix)
+    print("Pruned Metrics:\n")
+    print("Confusion Matrix:")
+    print(pruned_confusion_matrix)
+    print("\nMetrics:")
+
+    output_matrix = [['      ', 'Precision', 'Recall   ', 'F1-measures']]
+    # For each room
+    for i in range(4):
+        array = ["Room " + str(i + 1)]
+        for value in pruned_metrics.values():
+            val = str(round(value[i], 4))
+            while len(val) < 9:
+                val += ' '
+            array.append(val)
+        output_matrix.append(array)
+    output_matrix = np.array(output_matrix)
+
+    # We print the matrix easy to read
+    print(output_matrix)
+    print("\nAverage Classification Rate: " + str(round(pruned_average_classification_rate, 4)))
+    print("-------------------------------")
 
 
 # Get results.
-print("Clean")
-clean_confusion_matrix, clean_accuracy, clean_confusion_matrix_pruned, clean_accuracy_pruned = fold_cross_validation(10, clean_dataset)
-print("Unpruned")
-print(clean_confusion_matrix)
-print(get_metrics(clean_confusion_matrix))
-print(clean_accuracy)
-print("\nPruned")
-print(clean_confusion_matrix_pruned)
-print(get_metrics(clean_confusion_matrix_pruned))
-print(clean_accuracy_pruned)
-
-
-
-print("\n\nNoisy")
-noisy_confusion_matrix, noisy_accuracy, noisy_confusion_matrix_pruned, noisy_accuracy_pruned = fold_cross_validation(10, noisy_dataset)
-print(noisy_confusion_matrix)
-print(get_metrics(noisy_confusion_matrix))
-print(noisy_accuracy)
-print("\nPruned")
-print(noisy_confusion_matrix_pruned)
-print(get_metrics(noisy_confusion_matrix_pruned))
-print(noisy_accuracy_pruned)
+clean = fold_cross_validation(10, clean_dataset)
+noisy = fold_cross_validation(10, noisy_dataset)
+show_metrics(clean, "Clean Dataset")
+show_metrics(noisy, "Noisy Dataset")
