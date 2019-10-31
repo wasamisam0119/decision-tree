@@ -63,7 +63,7 @@ def fold_cross_validation(k, file):
 
         # Number of folds for the training set
         n = int(math.ceil(len(training_set) / len(test_set)))
-        training_set = split_dataset(n, training_set)
+        splitted_training_set = split_dataset(n, training_set)
 
         # We want to keep the best tree aftet the second n-fold cross validation
         best_pruned_tree = None
@@ -74,8 +74,8 @@ def fold_cross_validation(k, file):
         for j in range(n):
 
             # We set the sub-training set and the validation set.
-            sub_training_set = np.vstack(np.delete(training_set, np.s_[j], 0))
-            validation_set = training_set[j]
+            sub_training_set = np.vstack(np.delete(splitted_training_set, np.s_[j], 0))
+            validation_set = splitted_training_set[j]
 
             # Then we call the function to create the pruned decision tree.
             tree, depth = decision_tree_training(sub_training_set)
