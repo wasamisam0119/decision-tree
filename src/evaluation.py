@@ -112,11 +112,25 @@ def fold_cross_validation(k, file):
 
 
 # Get results.
+print("Clean")
 clean_confusion_matrix, clean_accuracy, clean_confusion_matrix_pruned, clean_accuracy_pruned = fold_cross_validation(10, clean_dataset)
+print("Unpruned")
 print(clean_confusion_matrix)
 print(get_metrics(clean_confusion_matrix))
 print(clean_accuracy)
+print("\nPruned")
+print(clean_confusion_matrix_pruned)
+print(get_metrics(clean_confusion_matrix_pruned))
+print(clean_accuracy_pruned)
+
+
+
+print("\n\nNoisy")
 noisy_confusion_matrix, noisy_accuracy, noisy_confusion_matrix_pruned, noisy_accuracy_pruned = fold_cross_validation(10, noisy_dataset)
 print(noisy_confusion_matrix)
 print(get_metrics(noisy_confusion_matrix))
 print(noisy_accuracy)
+print("\nPruned")
+print(noisy_confusion_matrix_pruned)
+print(get_metrics(noisy_confusion_matrix_pruned))
+print(noisy_accuracy_pruned)

@@ -248,41 +248,41 @@ def get_matrix_from_file(file):
     np.random.shuffle(matrix)
     return matrix
 
-
-dataMatrix = get_matrix_from_file(noisy_dataset)
-print(dataMatrix)
-# np.random.shuffle(dataMatrix)
-training = dataMatrix[:1200]
-validation = dataMatrix[1200:1600]
-test = dataMatrix[1600:2000]
-# here is call the recursive decision_tree_training to create the decision tree
-tree, depth = decision_tree_training(training, 0)
-str1 = tree.__str__()
-#print("Depth:", depth)
-print("Tree:", tree)
-# a = predict(tree, dataMatrix[0])
-# Test.test_tree_on_training_data(tree, dataMatrix)
-
-
-print(evaluate(test, tree)[1])
-
-pruned_tree = prune(tree, training, validation)
-str2 = pruned_tree.__str__()
-
-print(evaluate(test, pruned_tree)[1])
-
-
-print(pruned_tree.get_depth())
-print(pruned_tree)
-
-
-# testing_d = np.array([[45,1],[50,1],[37,4],[68,3],[90,2]])
-# tree, depth = decision_tree_training(testing_d, 0)
-# print(tree)
-# testing_v = np.array([[37,1],[48,1]])
-# testing_v2 = np.array([[56,1],[31,1],[10,4],[20,4]])
-# pruned = prune(tree, testing_d, testing_v)
-# print(pruned)
-# tree, depth = decision_tree_training(testing_d, 0)
-# pruned2 = prune(tree, testing_d, testing_v2)
-# print(pruned2)
+#
+# dataMatrix = get_matrix_from_file(noisy_dataset)
+# print(dataMatrix)
+# # np.random.shuffle(dataMatrix)
+# training = dataMatrix[:1200]
+# validation = dataMatrix[1200:1600]
+# test = dataMatrix[1600:2000]
+# # here is call the recursive decision_tree_training to create the decision tree
+# tree, depth = decision_tree_training(training, 0)
+# str1 = tree.__str__()
+# #print("Depth:", depth)
+# print("Tree:", tree)
+# # a = predict(tree, dataMatrix[0])
+# # Test.test_tree_on_training_data(tree, dataMatrix)
+#
+#
+# print(evaluate(test, tree)[1])
+#
+# pruned_tree = prune(tree, training, validation)
+# str2 = pruned_tree.__str__()
+#
+# print(evaluate(test, pruned_tree)[1])
+#
+#
+# print(pruned_tree.get_depth())
+# print(pruned_tree)
+#
+#
+# # testing_d = np.array([[45,1],[50,1],[37,4],[68,3],[90,2]])
+# # tree, depth = decision_tree_training(testing_d, 0)
+# # print(tree)
+# # testing_v = np.array([[37,1],[48,1]])
+# # testing_v2 = np.array([[56,1],[31,1],[10,4],[20,4]])
+# # pruned = prune(tree, testing_d, testing_v)
+# # print(pruned)
+# # tree, depth = decision_tree_training(testing_d, 0)
+# # pruned2 = prune(tree, testing_d, testing_v2)
+# # print(pruned2)
