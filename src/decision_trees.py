@@ -151,7 +151,7 @@ def prune(decision_tree: Node, training_dataset, validation_dataset):
         _, full_score = evaluate(validation_dataset, decision_tree)
         _, pruned_score = evaluate(validation_dataset, new_tree)
         # Compare full and pruned trees
-        if pruned_score > full_score:
+        if pruned_score >= full_score:
             return new_tree
         else:
             return decision_tree
@@ -215,7 +215,7 @@ def evaluate(test_db, trained_tree):
     confusion_matrix = np.array([[0] * 4] * 4)
     error = 0
     if len(test_db) == 0:
-        return confusion_matrix,0
+        return confusion_matrix,1
     else:
 
         # Iterate over the data of the fold test
@@ -245,32 +245,37 @@ noisy_dataset = 'wifi_db/noisy_dataset.txt'
 # Shuffle the data and return it as a matrix.
 def get_matrix_from_file(file):
     matrix = np.loadtxt(file)
-    # np.random.shuffle(matrix)
+    np.random.shuffle(matrix)
     return matrix
 
 
 dataMatrix = get_matrix_from_file(noisy_dataset)
 print(dataMatrix)
 # np.random.shuffle(dataMatrix)
-test = dataMatrix[:800]
-validation = dataMatrix[800:1600]
+training = dataMatrix[:1200]
+validation = dataMatrix[1200:1600]
+test = dataMatrix[1600:2000]
 # here is call the recursive decision_tree_training to create the decision tree
-tree, depth = decision_tree_training(test, 0)
+tree, depth = decision_tree_training(training, 0)
 str1 = tree.__str__()
 #print("Depth:", depth)
 print("Tree:", tree)
 # a = predict(tree, dataMatrix[0])
 # Test.test_tree_on_training_data(tree, dataMatrix)
-pruned_tree = prune(tree, test, validation)
+
+
+print(evaluate(test, tree)[1])
+
+pruned_tree = prune(tree, training, validation)
 str2 = pruned_tree.__str__()
+
+print(evaluate(test, pruned_tree)[1])
+
 
 print(pruned_tree.get_depth())
 print(pruned_tree)
-#print(str1  == str2)
 
-import difflib
 
-#print([ for idifflib.ndiff(str2, str1)])
 # testing_d = np.array([[45,1],[50,1],[37,4],[68,3],[90,2]])
 # tree, depth = decision_tree_training(testing_d, 0)
 # print(tree)
