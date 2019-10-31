@@ -1,42 +1,8 @@
 import math
-from scipy import stats
-from scipy.special import factorial
-from matplotlib import pyplot as plt
 import numpy as np
-import csv
-from io import StringIO
 import os
 from tree import Node
 
-
-# class DecisionTree:
-#     dataMatrix = np.loadtxt('wifi_db/clean_dataset.txt')
-#
-#     def decision_tree_learning(self, dataMatrix, max_depth, pruneIndex):
-#         label = dataMatrix[:, dataMatrix.shape[1] - 1]
-#         H = entropy_calc(label)
-#         classes = np.unique(label)
-#         data_by_column = dataMatrix[:, 0:dataMatrix.shape[1] - 1]
-#
-#         for idx in range(0, dataMatrix.shape[1] - 1):
-#             cur_col = dataMatrix[:, idx]
-#             sort_col = np.sort(cur_col)
-#
-#     label_counter is a dictionary that has
-#     key: label
-#     value: counter of the label in the dataset
-#     {'yes':5}
-#
-#
-#     def information_gain(self, S_all, S_left, S_right):
-#         info_gain = self.entropy_calc(S_all) - remainder
-#         return info_gain
-#
-#     def depth_calc(self):
-#         left_depth = self.left.depth_calc()
-#         right_depth = self.right.depth_calc()
-#         max_depth = max(left_depth, right_depth)
-#         return max_depth
 
 class Test:
     @classmethod
@@ -113,6 +79,7 @@ def find_split(training_data):
         for index, value in enumerate(feature_list): #moving the pointer
             # if prev_val == value:
             #     continue
+
             if prev_val != value:
                 current_gain = gain(base_entropy, index, left_counters, len(feature_list) - index, right_counters)
                 if current_gain > max_gain:
@@ -140,7 +107,7 @@ def split_dataset(training_data, split):
 
 
 # creates the decision tree
-def decision_tree_training(training_data, depth):
+def decision_tree_training(training_data, depth=0):
     if np.all(training_data[:, -1] == training_data[0][-1]):
         return Node(depth=depth, label=training_data[0][-1]), depth
     else:
@@ -160,6 +127,7 @@ def decision_tree_training(training_data, depth):
         node.set_right_node(right_node, right_depth)
         return node, max(left_depth, right_depth)
 
+
 def predict_datapoint(decision_tree: Node, datapoint):
     if decision_tree.is_leaf():
         # print('leaf', decision_tree.label)
@@ -173,6 +141,7 @@ def predict_datapoint(decision_tree: Node, datapoint):
             # print('right')
             return predict_datapoint(decision_tree.right_node, datapoint)
 
+
 def predict(decision_tree, X_test):
     Y_test = []
     for x in X_test:
@@ -180,6 +149,7 @@ def predict(decision_tree, X_test):
         Y_test.append(y)
     return Y_test
 
+'''
 def train_test_split(training_data,percentage):
     number_of_data = training_data.shape[0]
     train_test_index = int(percentage * number_of_data)
@@ -188,14 +158,15 @@ def train_test_split(training_data,percentage):
 
 
 # filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
-parentDirectory = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 filename = os.path.join(parentDirectory, 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
 dataMatrix = np.loadtxt(filename)
+print(dataMatrix)
 np.random.shuffle(dataMatrix)
 
 # here is call the recursive decision_tree_training to create the decision tree
 tree, depth = decision_tree_training(dataMatrix, 0)
 print("Depth:", depth)
 print("Tree:", tree)
-# a = predict(tree, dataMatrix[0])
-#Test.test_tree_on_training_data(tree, dataMatrix)
+a = predict(tree, dataMatrix[0])
+Test.test_tree_on_training_data(tree, dataMatrix)
+'''
