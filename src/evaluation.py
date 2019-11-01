@@ -151,6 +151,7 @@ def show_metrics(metrics, title):
 
     # We print the matrix easy to read
     print(output_matrix)
+    print("\nAverage Depth: " + str(sum(unpruned_depth) / len(unpruned_depth)))
     print("\nAverage Classification Rate: " +
           str(round((sum(unpruned_total_classification_rate) / len(unpruned_total_classification_rate)), 4)))
     print("-------------------------------")
@@ -176,31 +177,10 @@ def show_metrics(metrics, title):
 
     # We print the matrix easy to read
     print(output_matrix)
+    print("\nAverage Depth: " + str(sum(pruned_depth) / len(pruned_depth)))
     print("\nAverage Classification Rate: " +
           str(round((sum(pruned_total_classification_rate) / len(pruned_total_classification_rate)), 4)))
     print("-------------------------------")
-
-    # Depth comparisaon
-    print("\nDepth Comparison:\n")
-    print("Unpruned Tree:")
-    print(unpruned_total_classification_rate)
-    print(unpruned_depth)
-
-    print("\nPruned Tree:")
-    print(pruned_total_classification_rate)
-    print(pruned_depth)
-    counts = range(0, len(unpruned_depth))
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.5))
-    ax1.plot(counts, unpruned_depth, 'o-', label='Unpruned')
-    ax1.plot(counts, pruned_depth, 'o-', label='Pruned')
-    ax1.set(xlabel="Experiment", ylabel="Depth")
-    ax2.plot(counts, unpruned_total_classification_rate, 'o-', label='Unpruned')
-    ax2.plot(counts, pruned_total_classification_rate, 'o-', label='Pruned')
-    ax2.set(xlabel="Experiment", ylabel="Accuracy")
-    fig.suptitle(title)
-    plt.legend(loc='best')
-    plt.savefig(title + '.png')
-    plt.close()
 
 
 # Function that initialize the program.
