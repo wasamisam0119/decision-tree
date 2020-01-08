@@ -37,17 +37,20 @@ def entropy_calc(label_counters, total_samples):
 # label counters is a dict that its key is the label value and its value is the count
 def remainder_calc(len_S_left, left_label_counter, len_S_right, right_label_counters):
     total_len = len_S_left + len_S_right
-    remainder = len_S_left / total_len * entropy_calc(left_label_counter, len_S_left) + len_S_right / total_len * entropy_calc(right_label_counters, len_S_right)
+    remainder = len_S_left / total_len * entropy_calc(left_label_counter,
+                                                      len_S_left) + len_S_right / total_len * entropy_calc(
+        right_label_counters, len_S_right)
     return remainder
 
 
-def gain(total_gain, len_S_left , left_label_counter,len_S_right, right_label_counter):
-    new_gain = total_gain - remainder_calc(len_S_left , left_label_counter,len_S_right, right_label_counter)
+def gain(total_gain, len_S_left, left_label_counter, len_S_right, right_label_counter):
+    new_gain = total_gain - remainder_calc(len_S_left, left_label_counter, len_S_right, right_label_counter)
     return new_gain
 
 
 def read_dataset():
-    filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
+    filename = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                            'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
     print(filename)
     data_matrix = np.loadtxt(filename)
     print(data_matrix)
@@ -74,9 +77,9 @@ def find_split(training_data):
         for _label in unique:
             initial_l_count.append(0)
         left_counters = dict(zip(unique, initial_l_count))
-        right_counters = total_counts.copy()#why use copy?
-        prev_val = -10000 # initial a value for feature_list[index-1]
-        for index, value in enumerate(feature_list): #moving the pointer
+        right_counters = total_counts.copy()  # why use copy?
+        prev_val = -10000  # initial a value for feature_list[index-1]
+        for index, value in enumerate(feature_list):  # moving the pointer
             # if prev_val == value:
             #     continue
 
@@ -114,7 +117,7 @@ def decision_tree_training(training_data, depth=0):
         # find where to split
         split = find_split(training_data)
         # split there
-        #however, we can just record the position instead of actual split the dataset
+        # however, we can just record the position instead of actual split the dataset
         left_dataset, right_dataset = split_dataset(training_data, split)
         feature, value, _ = split
         # create node at this point
@@ -126,6 +129,55 @@ def decision_tree_training(training_data, depth=0):
         node.set_left_node(left_node, left_depth)
         node.set_right_node(right_node, right_depth)
         return node, max(left_depth, right_depth)
+
+
+def prune(decision_tree: Node, training_dataset, validation_dataset):
+    if decision_tree.is_leaf():
+        return decision_tree
+    # Split training and validation datasets into left and right, according to the feature value of the node
+    left_training, right_training = pruning_split(training_dataset, decision_tree)
+    left_v, right_v = pruning_split(validation_dataset, decision_tree)
+    # Recursively prune left and right children-subtrees
+    pruned_lnode = prune(decision_tree.left_node, left_training, left_v)
+    pruned_rnode = prune(decision_tree.right_node, right_training, right_v)
+    # Connect the new children nodes
+    decision_tree.set_left_node(pruned_lnode, pruned_lnode.depth)
+    decision_tree.set_right_node(pruned_rnode, pruned_rnode.depth)
+    # Prune this node, if it is only connected to leaves
+    if decision_tree.left_node.is_leaf() and decision_tree.right_node.is_leaf():
+        # Assign label from the training data
+        label = get_majority(training_dataset)
+        new_tree = Node(label=label, depth=decision_tree.depth)
+        _, full_score = evaluate(validation_dataset, decision_tree)
+        _, pruned_score = evaluate(validation_dataset, new_tree)
+        # Compare full and pruned trees
+        if pruned_score >= full_score:
+            return new_tree
+        else:
+            return decision_tree
+    else:
+        return decision_tree
+
+
+# pruning_split is basically splitting the dataset based on value that stored in the current node
+# which will be used in the prune() note: this is different
+def pruning_split(dataset, tree: Node):
+    feature = tree.feature
+    split_value = tree.split_value
+    left_list = []
+    right_list = []
+    for datapoint in dataset:
+        if datapoint[feature] < split_value:
+            left_list.append(datapoint)
+        else:
+            right_list.append(datapoint)
+    return np.array(left_list), np.array(right_list)
+
+
+# get the label that has the highest occurance
+def get_majority(training_dataset):
+    counts = np.bincount(training_dataset[:,-1].astype(int))  # cast to int to get the count
+    return float(np.argmax(counts))  # return the value of the label
 
 
 def predict_datapoint(decision_tree: Node, datapoint):
@@ -145,28 +197,92 @@ def predict_datapoint(decision_tree: Node, datapoint):
 def predict(decision_tree, X_test):
     Y_test = []
     for x in X_test:
-        y = predict_datapoint(decision_tree,x)
+        y = predict_datapoint(decision_tree, x)
         Y_test.append(y)
     return Y_test
 
-'''
-def train_test_split(training_data,percentage):
+
+def train_test_split(training_data, percentage):
     number_of_data = training_data.shape[0]
     train_test_index = int(percentage * number_of_data)
-    data_train, data_test = dataMatrix[0:train_test_index,:], dataMatrix[train_test_index:,:]
-    return data_train,data_test
+    data_train, data_test = dataMatrix[0:train_test_index, :], dataMatrix[train_test_index:, :]
+    return data_train, data_test
 
+
+# Return the confusion matrix and the classification rate of the tree.
+def evaluate(test_db, trained_tree):
+    # Confusion matrix for this tree.
+    confusion_matrix = np.array([[0] * 4] * 4)
+    error = 0
+    if len(test_db) == 0:
+        return confusion_matrix,1
+    else:
+
+        # Iterate over the data of the fold test
+        for row in test_db:
+            # We set the features and the label.
+            features = row[:-1]
+            label = int(row[-1])
+
+            # Call the decision tree
+            predicted_label = int(predict_datapoint(trained_tree, features))
+
+            # Increment confusion_matrix
+            confusion_matrix[label - 1][predicted_label - 1] += 1
+
+            if predicted_label != label:
+                error += 1
+
+        classification_rate = 1 - (error / len(test_db))
+
+        return confusion_matrix, classification_rate
 
 # filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
-filename = os.path.join(parentDirectory, 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
-dataMatrix = np.loadtxt(filename)
-print(dataMatrix)
-np.random.shuffle(dataMatrix)
+clean_dataset = 'wifi_db/clean_dataset.txt'
+noisy_dataset = 'wifi_db/noisy_dataset.txt'
 
+
+# Shuffle the data and return it as a matrix.
+def get_matrix_from_file(file):
+    matrix = np.loadtxt(file)
+    np.random.shuffle(matrix)
+    return matrix
+
+
+dataMatrix = get_matrix_from_file(noisy_dataset)
+print(dataMatrix)
+# np.random.shuffle(dataMatrix)
+training = dataMatrix[:1200]
+validation = dataMatrix[1200:1600]
+test = dataMatrix[1600:2000]
 # here is call the recursive decision_tree_training to create the decision tree
-tree, depth = decision_tree_training(dataMatrix, 0)
-print("Depth:", depth)
+tree, depth = decision_tree_training(training, 0)
+str1 = tree.__str__()
+#print("Depth:", depth)
 print("Tree:", tree)
-a = predict(tree, dataMatrix[0])
-Test.test_tree_on_training_data(tree, dataMatrix)
-'''
+# a = predict(tree, dataMatrix[0])
+# Test.test_tree_on_training_data(tree, dataMatrix)
+
+
+print(evaluate(test, tree)[1])
+
+pruned_tree = prune(tree, training, validation)
+str2 = pruned_tree.__str__()
+
+print(evaluate(test, pruned_tree)[1])
+
+
+print(pruned_tree.get_depth())
+print(pruned_tree)
+
+
+# testing_d = np.array([[45,1],[50,1],[37,4],[68,3],[90,2]])
+# tree, depth = decision_tree_training(testing_d, 0)
+# print(tree)
+# testing_v = np.array([[37,1],[48,1]])
+# testing_v2 = np.array([[56,1],[31,1],[10,4],[20,4]])
+# pruned = prune(tree, testing_d, testing_v)
+# print(pruned)
+# tree, depth = decision_tree_training(testing_d, 0)
+# pruned2 = prune(tree, testing_d, testing_v2)
+# print(pruned2)
