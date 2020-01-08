@@ -1,24 +1,6 @@
 import math
 import numpy as np
-import os
 from tree import Node
-
-
-class Test:
-    @classmethod
-    def test_entropy_calc(cls):
-        test_dict = {1: 4, 2: 2, 3: 1, 4: 1}
-        total_samples = 8
-        H = entropy_calc(test_dict, total_samples)
-        assert (H == 1.75)
-
-    # tests that the tree is a correct decision tree from the training data
-    @staticmethod
-    def test_tree_on_training_data(tree, dataset):
-        for datapoint in dataset:
-            features = datapoint[:-1]
-            prediction = predict(tree, features)
-            assert datapoint[-1] == prediction
 
 
 def entropy_calc(label_counters, total_samples):
@@ -48,14 +30,6 @@ def gain(total_gain, len_S_left, left_label_counter, len_S_right, right_label_co
     return new_gain
 
 
-def read_dataset():
-    filename = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                            'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
-    print(filename)
-    data_matrix = np.loadtxt(filename)
-    print(data_matrix)
-
-
 def find_split(training_data):
     features = len(training_data[0]) - 1  # calculate number of features
     # calculate the unique value of label and its count
@@ -77,12 +51,9 @@ def find_split(training_data):
         for _label in unique:
             initial_l_count.append(0)
         left_counters = dict(zip(unique, initial_l_count))
-        right_counters = total_counts.copy()  # why use copy?
+        right_counters = total_counts.copy()
         prev_val = -10000  # initial a value for feature_list[index-1]
         for index, value in enumerate(feature_list):  # moving the pointer
-            # if prev_val == value:
-            #     continue
-
             if prev_val != value:
                 current_gain = gain(base_entropy, index, left_counters, len(feature_list) - index, right_counters)
                 if current_gain > max_gain:
@@ -98,14 +69,11 @@ def find_split(training_data):
 
 # split is the values returned by find_split
 # the split_dataset function is to be called after finding a split, in order to actually split the dataset
-def split_dataset(training_data, split):
+def split_training_dataset(training_data, split):
     best_feature, _best_value, best_value_position_in_sorted = split
     sorted_data = training_data[training_data[:, best_feature].argsort()]
     left_dataset = sorted_data[:best_value_position_in_sorted, :]
     right_dataset = sorted_data[best_value_position_in_sorted:, :]
-    # print(best_feature, _best_value, best_value_position_in_sorted)
-    # print(left_dataset)
-    # print(right_dataset)
     return left_dataset, right_dataset
 
 
@@ -118,7 +86,7 @@ def decision_tree_training(training_data, depth=0):
         split = find_split(training_data)
         # split there
         # however, we can just record the position instead of actual split the dataset
-        left_dataset, right_dataset = split_dataset(training_data, split)
+        left_dataset, right_dataset = split_training_dataset(training_data, split)
         feature, value, _ = split
         # create node at this point
         node = Node(feature=feature, split_value=value, depth=depth)
@@ -141,8 +109,8 @@ def prune(decision_tree: Node, training_dataset, validation_dataset):
     pruned_lnode = prune(decision_tree.left_node, left_training, left_v)
     pruned_rnode = prune(decision_tree.right_node, right_training, right_v)
     # Connect the new children nodes
-    decision_tree.set_left_node(pruned_lnode, pruned_lnode.depth)
-    decision_tree.set_right_node(pruned_rnode, pruned_rnode.depth)
+    decision_tree.set_left_node(pruned_lnode, pruned_lnode.get_depth())
+    decision_tree.set_right_node(pruned_rnode, pruned_rnode.get_depth())
     # Prune this node, if it is only connected to leaves
     if decision_tree.left_node.is_leaf() and decision_tree.right_node.is_leaf():
         # Assign label from the training data
@@ -176,7 +144,7 @@ def pruning_split(dataset, tree: Node):
 
 # get the label that has the highest occurance
 def get_majority(training_dataset):
-    counts = np.bincount(training_dataset[:,-1].astype(int))  # cast to int to get the count
+    counts = np.bincount(training_dataset[:, -1].astype(int))  # cast to int to get the count
     return float(np.argmax(counts))  # return the value of the label
 
 
@@ -202,20 +170,13 @@ def predict(decision_tree, X_test):
     return Y_test
 
 
-def train_test_split(training_data, percentage):
-    number_of_data = training_data.shape[0]
-    train_test_index = int(percentage * number_of_data)
-    data_train, data_test = dataMatrix[0:train_test_index, :], dataMatrix[train_test_index:, :]
-    return data_train, data_test
-
-
 # Return the confusion matrix and the classification rate of the tree.
 def evaluate(test_db, trained_tree):
     # Confusion matrix for this tree.
     confusion_matrix = np.array([[0] * 4] * 4)
     error = 0
     if len(test_db) == 0:
-        return confusion_matrix,1
+        return confusion_matrix, 1
     else:
 
         # Iterate over the data of the fold test
@@ -237,52 +198,4 @@ def evaluate(test_db, trained_tree):
 
         return confusion_matrix, classification_rate
 
-# filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dataset/co553-cbc-dt/wifi_db/clean_dataset.txt')
-clean_dataset = 'wifi_db/clean_dataset.txt'
-noisy_dataset = 'wifi_db/noisy_dataset.txt'
 
-
-# Shuffle the data and return it as a matrix.
-def get_matrix_from_file(file):
-    matrix = np.loadtxt(file)
-    np.random.shuffle(matrix)
-    return matrix
-
-
-dataMatrix = get_matrix_from_file(noisy_dataset)
-print(dataMatrix)
-# np.random.shuffle(dataMatrix)
-training = dataMatrix[:1200]
-validation = dataMatrix[1200:1600]
-test = dataMatrix[1600:2000]
-# here is call the recursive decision_tree_training to create the decision tree
-tree, depth = decision_tree_training(training, 0)
-str1 = tree.__str__()
-#print("Depth:", depth)
-print("Tree:", tree)
-# a = predict(tree, dataMatrix[0])
-# Test.test_tree_on_training_data(tree, dataMatrix)
-
-
-print(evaluate(test, tree)[1])
-
-pruned_tree = prune(tree, training, validation)
-str2 = pruned_tree.__str__()
-
-print(evaluate(test, pruned_tree)[1])
-
-
-print(pruned_tree.get_depth())
-print(pruned_tree)
-
-
-# testing_d = np.array([[45,1],[50,1],[37,4],[68,3],[90,2]])
-# tree, depth = decision_tree_training(testing_d, 0)
-# print(tree)
-# testing_v = np.array([[37,1],[48,1]])
-# testing_v2 = np.array([[56,1],[31,1],[10,4],[20,4]])
-# pruned = prune(tree, testing_d, testing_v)
-# print(pruned)
-# tree, depth = decision_tree_training(testing_d, 0)
-# pruned2 = prune(tree, testing_d, testing_v2)
-# print(pruned2)
